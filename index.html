@@ -14,7 +14,6 @@
 	<script type="text/javascript" charset="utf-8" src="phonegap-1.2.0.js"></script>
     <link rel="stylesheet" href="jquery.mobile-1.0.min.css" />
 
-    <link href="mobiscroll-1.5.2.css" rel="stylesheet" type="text/css" />
 	
 	<script type="text/javascript" src="jquery-1.6.4.min.js"></script>
 	<script type="text/javascript" src="jquery.mobile-1.0.min.js"></script>	
@@ -34,8 +33,10 @@
 					alert('login success');
 					$(location).attr('href', '#card_page');
 				},
-				error: function() {
-					alert('login failed');
+				error: function(error) {
+					//alert('login failed');
+					//result = (new XMLSerializer()).serializeToString(error);
+					alert(result);
 					go_config_page();
 				},
 				statusCode: {
@@ -69,10 +70,10 @@
 			user_name = window.localStorage.getItem('user_name');
 			password = window.localStorage.getItem('password');	
 			login();
-			//alert(host);
-			//alert(project_name);
-			//alert(user_name);
-			//alert(password);		
+			alert(host);
+			alert(project_name);
+			alert(user_name);
+			alert(password);		
 		}
 		function go_config_page(){
 			$(location).attr('href', '#config_page');
@@ -102,7 +103,7 @@
 						<p id="leave-type-comment">Card No</p>
 						<div data-role="fieldcontain">
 							    <label for="card_id">Input Card No.</label>
-								<input type="text" name="card_id" id="card_id" class="mobiscroll"/>
+								<input type="text" name="card_id" id="card_id" />
 								<!-- <a href="#" data-role="button" data-inline="true" onclick="transitions($('#card_id').val())">Go</a>-->
 								<a href="#" data-role="button" data-inline="true" onclick="transitions($('#card_id').val())">Go</a>
 						</div>
