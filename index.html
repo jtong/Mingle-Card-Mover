@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  	<title>Vommo</title>   
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no;" />
+	<meta charset="utf-8">
+
+
+	<!-- iPad/iPhone specific css below, add after your main css >
+	<link rel="stylesheet" media="only screen and (max-device-width: 1024px)" href="ipad.css" type="text/css" />		
+	<link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="iphone.css" type="text/css" />		
+	-->
+	<!-- If your application is targeting iOS BEFORE 4.0 you MUST put json2.js from http://www.JSON.org/json2.js into your www directory and include it here -->
+	<script type="text/javascript" charset="utf-8" src="phonegap-1.2.0.js"></script>
+    <link rel="stylesheet" href="jquery.mobile-1.0.min.css" />
+
+    <link href="mobiscroll-1.5.2.css" rel="stylesheet" type="text/css" />
+	
+	<script type="text/javascript" src="jquery-1.6.4.min.js"></script>
+	<script type="text/javascript" src="jquery.mobile-1.0.min.js"></script>	
+		<script>
+		
+		var host= window.localStorage.getItem('host');
+		var project_name = window.localStorage.getItem('project_name');
+		var	user_name = window.localStorage.getItem('user_name');
+		var	password = window.localStorage.getItem('password');	
+		
+		function login(){
+			$.ajax({
+				url: host + '/profile/login',
+				type: 'POST',
+				data: {'user[login]':user_name, 'user[password]':password},
+				success: function( data ) {
+					alert('login success');
+					$(location).attr('href', '#card_page');
+				},
+				error: function() {
+					alert('login failed');
+					go_config_page();
+				},
+				statusCode: {
+					302: function() {
+						alert('redirect');
+					}
+				}
+			});
+
+		}
+		
+		$(document).bind("mobileinit", function() {
+		      $.mobile.page.prototype.options.addBackBtn = true;
+			  $.mobile.allowCrossDomainPages = true;
+			  $.support.cors = true;
+		});
+		$().ready(function(){
+			if( host && project_name && user_name && password ){
+				login();
+			} else {
+				go_config_page();
+			}
+		})
+		function change_profile(){
+			window.localStorage.setItem('host',$('#host').val());
+			window.localStorage.setItem('project_name', $('#project_name').val());
+			window.localStorage.setItem('user_name',$('#user_name').val());
+			window.localStorage.setItem('password', $('#password').val());
+			host= window.localStorage.getItem('host');
+			project_name = window.localStorage.getItem('project_name');
+			user_name = window.localStorage.getItem('user_name');
+			password = window.localStorage.getItem('password');	
+			login();
+			//alert(host);
+			//alert(project_name);
+			//alert(user_name);
+			//alert(password);		
+		}
+		function go_config_page(){
+			$(location).attr('href', '#config_page');
+			$('#host').val(window.localStorage.getItem('host'));
+			$('#project_name').val(window.localStorage.getItem('project_name'));
+			$('#user_name').val(window.localStorage.getItem('user_name'));
+			$('#password').val(window.localStorage.getItem('password'));
+		}
+	</script>
+	
+  </head>
+  <body>
+  <!-- Start of first page -->
+  <div data-role="page" id="card_page">
+
+	<div data-role="header">
+		<h1>Card Mover</h1>
+		<a href="#" data-role="button" data-inline="true" onclick="go_config_page()" >Config</a>
+	</div><!-- /header -->
+
+	<div data-role="content">	
+		<div class="content-primary">	
+		
+		<ul data-role="listview" id="thelist">
+					<li>
+						<h3>Card</h3>
+						<p id="leave-type-comment">Card No</p>
+						<div data-role="fieldcontain">
+							    <label for="card_id">Input Card No.</label>
+								<input type="text" name="card_id" id="card_id" class="mobiscroll"/>
+								<!-- <a href="#" data-role="button" data-inline="true" onclick="transitions($('#card_id').val())">Go</a>-->
+								<a href="#" data-role="button" data-inline="true" onclick="transitions($('#card_id').val())">Go</a>
+						</div>
+					</li>
+		</ul>
+		</div>
+   </div>
+</div>
+<div data-role="page" id="tran_page">
+	<div data-role="header">
+		<a href="#card_page" data-role="button" data-inline="true" >Back</a>
+		<h1>Transitions</h1>
+	</div>
+	<div data-role="content">
+				<p id="leave-type-comment">Choose a transition</p>						
+				<div id="transitions_container">
+				</div>
+	</div>
+</div>
+<div data-role="page" id="comment_page">
+	<div data-role="header">
+		<a href="#tran_page" data-role="button" data-inline="true" >Back</a>
+		<h1>Comment</h1>
+	</div>
+	<div data-role="content">					
+				<label for="comment">Input a comment:</label>
+				<textarea name="textarea" id="comment"></textarea>
+				<a id="commit_button" href="#" data-role="button" >Commit</a>
+	</div>
+</div>
+<div data-role="page" id="config_page">
+	<div data-role="header">
+		<a href="#card_page" data-role="button" data-inline="true" >Back</a>
+		<h1>Comment</h1>
+	</div>
+	<div data-role="content">					
+				<label for="host">Input a Host:</label>
+				<input name="host" type="text" id="host" />
+				<label for="host">Input a Project:</label>
+				<input name="project_name" type="text" id="project_name" />
+				<label for="host">Input a User Name:</label>
+				<input name="user_name" type="text" id="user_name" />
+				<label for="host">Input a Password:</label>
+				<input name="password" type="text" id="password" />
+				<a id="login_button" href="#" data-role="button" onclick="change_profile()">Login</a>
+	</div>
+</div>
+
+</body>
+	
+<script>
+        
+		
+		function card(){
+			$.ajax({
+				url: host + '/api/v2/projects/vommo/cards/1.xml',
+				type: 'GET',
+				success: function( data ) {
+					result = (new XMLSerializer()).serializeToString(data)
+					alert(result);
+				},
+				error: function(error) {
+					alert(error);
+				},
+				statusCode: {
+					302: function() {
+						alert('redirect');
+					}
+				}
+			});
+		}
+		
+		function transitions(card_id) {
+			$.ajax({
+				url: host + '/api/v2/projects/'+project_name+'/cards/'+card_id+'/transitions.xml',
+				type: 'GET',
+				success: function( data ) {
+					//alert('success');
+					$('#transitions_container').empty()
+					//result = (new XMLSerializer()).serializeToString(data);
+					//alert($($(data).find('transition > name')).text());
+					$(data).find('transition').each(function( index, transition ){
+						//alert('transition_button+before');
+						var transition_button = $('<a href="#" data-role="button"></a>');
+						//alert('transition_button');
+						var execute_url = $($(transition).find('transition_execution_url').get(0)).text();
+						var need_comment = $($(transition).find('require_comment').get(0)).text() == 'true';
+						//alert(need_comment);
+						transition_button.click( function() { move_card(execute_url, card_id, need_comment) });
+						
+						var transition_name = $($(transition).find('name').get(0)).text();
+						
+						
+						transition_button.html(transition_name);
+						
+						//alert('transition_button_html');
+
+						
+
+						$("#transitions_container").append(transition_button);
+					});
+					//alert($("#transitions_container").html());
+					//$('#tran_page').page();
+					$(location).attr('href', '#tran_page');
+					$('#transitions_container').trigger('create');
+				},
+				error: function(jqXHR, textStatus, error) {
+				
+					//result = (new XMLSerializer()).serializeToString(error);
+					alert(error);
+					//alert(error);
+				},
+				statusCode: {
+					302: function() {
+						alert('redirect');
+					}
+				}
+			});
+		}
+		function move_card(execute_url, card_id, need_comment)
+		{
+			if(need_comment){
+				$(location).attr('href', '#comment_page');
+				$('#comment').val('');
+				$('#commit_button').click(function() {
+					var comment_text = $('#comment').val();
+					$.ajax({
+						url: execute_url,
+						type: 'POST',
+						data: {'transition_execution[card]' : card_id, 'transition_execution[comment]' : comment_text},
+						success: function(data){
+							$(location).attr('href', '#card_page');
+						},
+						error: function() {
+							alert('error');
+						}
+
+					});
+				})
+			}else{
+				do_move_card_without_comment(execute_url, card_id);
+			}
+		}
+		
+		function do_move_card_without_comment(execute_url, card_id)
+		{
+			//alert(execute_url);
+			$.ajax({
+				url: execute_url,
+				type: 'POST',
+				data: {'transition_execution[card]' : card_id},
+				success: function(data){
+					//result = (new XMLSerializer()).serializeToString(data);
+					//alert($(data).text());
+					$(location).attr('href', '#card_page');
+				},
+				error: function() {
+					alert('error');
+				}
+
+			});
+		}
+		
+		function show_with_credentials(){
+			$.ajax({
+				url: 'http://minglehosting.thoughtworks.com/zynx/',
+				xhrFields: {
+					withCredentials: true
+				},
+
+				success: function( data ) {
+					alert(data);
+				}
+			});
+
+		}
+	</script>
+
+</html>
